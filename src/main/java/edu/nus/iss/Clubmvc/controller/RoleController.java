@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import edu.nus.iss.Clubmvc.controller.exception.RoleNotFound;
 import edu.nus.iss.Clubmvc.controller.service.EmployeeService;
 import edu.nus.iss.Clubmvc.controller.service.RoleService;
 import edu.nus.iss.Clubmvc.model.Role;
@@ -68,5 +69,27 @@ public class RoleController {
         model.addAttribute("role", role);
 
         return "role-edit";
+    }
+
+    @RequestMapping(value = "/edit/{id}", method = RequestMethod.POST)
+    public String editRole(@ModelAttribute @Valid Role role, BindingResult result,
+    @PathVariable String id) throws RoleNotFound{
+        if(result.hasErrors()){
+            return "role-edit";
+        }
+        rService.changeRole(role);
+
+        return "redirect:/admin/role/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteRole(@PathVariable String id)throws RoleNotFound{
+        Role role = rService.findRole(id);
+        rService.removeRole(role);
+
+        String message = "The role "+ role.getRoleId()+" was successfully deleted.";
+        System.out.println(message);
+        
+        return "redirect:/admin/role/list";
     }
 }
