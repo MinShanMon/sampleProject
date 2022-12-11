@@ -2,12 +2,17 @@ package edu.nus.iss.Clubmvc.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -45,5 +50,23 @@ public class RoleController {
         model.addAttribute("role", new Role());
         
         return "role-new";
+    }
+
+    @RequestMapping(value = "/create", method=RequestMethod.POST)
+    public String newRole(@ModelAttribute @Valid Role role, BindingResult reslut, Model model){
+        if(reslut.hasErrors()){
+            return "role-new";
+        }
+        rService.createRole(role);
+
+        return "redirect:/admin/role/list";
+    }
+
+    @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
+    public String editEmployeePage(@PathVariable("id") String id, Model model){
+        Role role = rService.findRole(id);
+        model.addAttribute("role", role);
+
+        return "role-edit";
     }
 }
